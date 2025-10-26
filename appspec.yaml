@@ -1,0 +1,12 @@
+version: 0.0
+os: linux
+files:
+  - source: /
+    destination: /home/ec2-user/deploy
+
+hooks:
+  AfterInstall:
+    - location: scripts/start_new_container.sh
+      timeout: 180
+      runas: ec2-user
+
