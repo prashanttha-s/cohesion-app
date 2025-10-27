@@ -2,40 +2,40 @@ version: 0.2
 
 env:
   variables:
-    AWS_DEFAULT_REGION: ap-south-1          # Change to your region
-    IMAGE_REPO_NAME: cohesion-app           # ECR repository name
+    AWS_DEFAULT_REGION: ap-south-1        # change to your region
+    IMAGE_REPO_NAME: cohesion-app         # your ECR repo
     IMAGE_TAG: latest
     CONTAINER_NAME: cohesion-container
 
 phases:
   install:
-    runtime-versions:
-      docker: 20
     commands:
-      - echo "Installing dependencies if needed..."
-      - apt-get update -y || true
+      - echo "Installing dependencies..."
+      - echo "Nothing to install at this stage."
 
   pre_build:
     commands:
       - echo "Logging in to Amazon ECR..."
       - ACCOUNT_ID=$(aws sts get-caller-identity --query "Account" --output text)
       - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
-      - echo "Login successful to ECR"
+      - echo "Logged in successfully to ECR"
 
   build:
     commands:
-      - echo "Building Docker image..."
+      - echo "Building the Docker image..."
       - docker build -t $IMAGE_REPO_NAME:$IMAGE_TAG .
       - docker tag $IMAGE_REPO_NAME:$IMAGE_TAG $ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
       - echo "Pushing Docker image to ECR..."
       - docker push $ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
-      - echo "Creating imagedefinitions.json for CodeDeploy/CodePipeline..."
+      - echo "Creating imagedefinitions.json..."
       - printf '[{"name":"%s","imageUri":"%s"}]' $CONTAINER_NAME $ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG > imagedefinitions.json
 
   post_build:
     commands:
-      - echo "Build completed successfully on `date`."
+      - echo "Build completed successfully on `date`"
+
 artifacts:
   files:
     - imagedefinitions.json
+
 
