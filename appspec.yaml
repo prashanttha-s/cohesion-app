@@ -3,10 +3,13 @@ os: linux
 files:
   - source: /
     destination: /home/ec2-user/deploy
-
 hooks:
+  BeforeInstall:
+    - location: scripts/prepare_deploy.sh
+      timeout: 60
+      runas: root
   AfterInstall:
     - location: scripts/start_new_container.sh
       timeout: 180
-      runas: ec2-user
+      runas: root
 
