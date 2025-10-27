@@ -2,10 +2,14 @@ version: 0.2
 
 env:
   variables:
-    AWS_DEFAULT_REGION: ap-south-1        # change to your region
-    IMAGE_REPO_NAME: cohesion-app         # your ECR repo
+    AWS_DEFAULT_REGION: ap-south-1
+    IMAGE_REPO_NAME: cohesion-app
     IMAGE_TAG: latest
     CONTAINER_NAME: cohesion-container
+
+  secrets-manager:
+    DOCKERHUB_USERNAME: dockerhub/credentials:username
+    DOCKERHUB_PASSWORD: dockerhub/credentials:password
 
 phases:
   install:
@@ -15,6 +19,9 @@ phases:
 
   pre_build:
     commands:
+      - echo "Logging in to DockerHub..."
+      - echo $DOCKERHUB_PASSWORD | docker login -u $DOCKERHUB_USERNAME --password-stdin
+      - echo "DockerHub login successful."
       - echo "Logging in to Amazon ECR..."
       - ACCOUNT_ID=$(aws sts get-caller-identity --query "Account" --output text)
       - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
@@ -37,5 +44,4 @@ phases:
 artifacts:
   files:
     - imagedefinitions.json
-
 
