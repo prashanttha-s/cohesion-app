@@ -43,4 +43,8 @@ phases:
 artifacts:
   files:
     - imagedefinitions.json
-
+    - appspec.yaml
+    - scripts/**/*
+    - docker-compose.yml
+    - imageDetail.txt
+    - imageDetail.json
