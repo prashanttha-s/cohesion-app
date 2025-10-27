@@ -4,7 +4,6 @@ env:
   variables:
     IMAGE_REPO_NAME: "cohesion"
     IMAGE_TAG: "latest"
-    AWS_DEFAULT_REGION: "ap-south-1"   # Optional if already set in CodeBuild
 
 phases:
   pre_build:
@@ -36,4 +35,5 @@ phases:
 artifacts:
   files:
     - deploy.zip
+
 
