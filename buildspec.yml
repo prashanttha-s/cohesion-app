@@ -2,15 +2,17 @@ version: 0.2
 
 env:
   variables:
-    IMAGE_REPO_NAME: "cohesion"            # Change to your ECR repo name
+    IMAGE_REPO_NAME: "cohesion"
     IMAGE_TAG: "latest"
+    AWS_DEFAULT_REGION: "ap-south-1"   # Optional if already set in CodeBuild
 
 phases:
   pre_build:
     commands:
       - echo Logging in to Amazon ECR...
       - ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
-      - REGION=$(aws configure get region)
+      - REGION=${AWS_DEFAULT_REGION:-ap-south-1}
+      - echo "Using region: $REGION"
       - REPOSITORY_URI=${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/${IMAGE_REPO_NAME}
       - aws ecr get-login-password --region $REGION | docker login --username AWS --password-stdin $REPOSITORY_URI
 
@@ -29,9 +31,7 @@ phases:
       - cp appspec.yaml deploy/
       - cp -r scripts deploy/
       - cp imageDetail.txt deploy/
-      - cd deploy
-      - zip -r ../deploy.zip .
-      - cd ..
+      - cd deploy && zip -r ../deploy.zip . && cd ..
 
 artifacts:
   files:
