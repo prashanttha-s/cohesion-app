@@ -6,9 +6,6 @@ env:
     IMAGE_REPO_NAME: cohesion-app           # ECR repository name
     IMAGE_TAG: latest
     CONTAINER_NAME: cohesion-container
-  parameter-store:
-    # (optional) if you store secrets like API URLs in SSM Parameter Store
-    # VITE_API_URL: "/cohesion/dev/api_url"
 
 phases:
   install:
