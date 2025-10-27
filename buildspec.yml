@@ -1,10 +1,8 @@
 version: 0.2
-
 env:
   variables:
     IMAGE_REPO_NAME: "cohesion"
     IMAGE_TAG: "latest"
-
 phases:
   pre_build:
     commands:
@@ -14,13 +12,11 @@ phases:
       - echo "Using region: $REGION"
       - REPOSITORY_URI=${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/${IMAGE_REPO_NAME}
       - aws ecr get-login-password --region $REGION | docker login --username AWS --password-stdin $REPOSITORY_URI
-
   build:
     commands:
       - echo Building Docker image...
       - docker build -t $IMAGE_REPO_NAME .
       - docker tag $IMAGE_REPO_NAME:latest $REPOSITORY_URI:$IMAGE_TAG
-
   post_build:
     commands:
       - echo Pushing image to ECR...
@@ -31,9 +27,6 @@ phases:
       - cp -r scripts deploy/
       - cp imageDetail.txt deploy/
       - cd deploy && zip -r ../deploy.zip . && cd ..
-
 artifacts:
   files:
     - deploy.zip
-
-
